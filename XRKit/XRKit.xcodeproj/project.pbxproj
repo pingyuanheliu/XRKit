@@ -15,6 +15,8 @@
 		6A8849C7216064050039FDA5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849C6216064050039FDA5 /* main.m */; };
 		6A8849D621606D980039FDA5 /* UIImage+XRArrow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */; };
 		6A8849D821606F980039FDA5 /* XRKit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 6A8849D721606F980039FDA5 /* XRKit.podspec */; };
+		6A9C6780217461BD002CD759 /* XRCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9C677F217461BD002CD759 /* XRCameraViewController.m */; };
+		6A9C678321746211002CD759 /* XRCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9C678221746211002CD759 /* XRCameraManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,10 @@
 		6A8849D421606D980039FDA5 /* UIImage+XRArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+XRArrow.h"; sourceTree = "<group>"; };
 		6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+XRArrow.m"; sourceTree = "<group>"; };
 		6A8849D721606F980039FDA5 /* XRKit.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = XRKit.podspec; path = ../XRKit.podspec; sourceTree = "<group>"; };
+		6A9C677E217461BD002CD759 /* XRCameraViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRCameraViewController.h; sourceTree = "<group>"; };
+		6A9C677F217461BD002CD759 /* XRCameraViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRCameraViewController.m; sourceTree = "<group>"; };
+		6A9C678121746211002CD759 /* XRCameraManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRCameraManager.h; sourceTree = "<group>"; };
+		6A9C678221746211002CD759 /* XRCameraManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRCameraManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +89,7 @@
 		6A8849CD2160655C0039FDA5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				6A9C677D21746165002CD759 /* Camera */,
 				6A8849D321606D980039FDA5 /* Image */,
 			);
 			path = Classes;
@@ -109,6 +116,17 @@
 				6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		6A9C677D21746165002CD759 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				6A9C678121746211002CD759 /* XRCameraManager.h */,
+				6A9C678221746211002CD759 /* XRCameraManager.m */,
+				6A9C677E217461BD002CD759 /* XRCameraViewController.h */,
+				6A9C677F217461BD002CD759 /* XRCameraViewController.m */,
+			);
+			path = Camera;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,7 +200,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A9C6780217461BD002CD759 /* XRCameraViewController.m in Sources */,
 				6A8849BC216064030039FDA5 /* ViewController.m in Sources */,
+				6A9C678321746211002CD759 /* XRCameraManager.m in Sources */,
 				6A8849D621606D980039FDA5 /* UIImage+XRArrow.m in Sources */,
 				6A8849C7216064050039FDA5 /* main.m in Sources */,
 				6A8849B9216064030039FDA5 /* AppDelegate.m in Sources */,
