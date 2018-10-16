@@ -1,16 +1,14 @@
 //
-//  ViewController.h
+//  SubViewController.h
 //  XRKit
 //
-//  Created by LL on 2018/9/30.
+//  Created by LL on 2018/10/16.
 //  Copyright © 2018年 LL. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 #import "XRCameraViewController.h"
 
-@interface ViewController : XRCameraViewController
-
+@interface SubViewController : XRCameraViewController
 
 @end
-
