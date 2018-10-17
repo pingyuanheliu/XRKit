@@ -97,11 +97,13 @@ Pod::Spec.new do |s|
   # s.public_header_files = "Classes/**/*.h"
 
   s.subspec 'Image' do |ss|
+
     ss.source_files  = "Classes", "XRKit/Classes/Image/**/*.{h,m}"
 
   end
 
   s.subspec 'Camera' do |ss|
+    
     ss.source_files  = "Classes", "XRKit/Classes/Camera/**/*.{h,m}"
 
   end
