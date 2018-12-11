@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="pCf-5Z-ibu">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="5hO-4C-2aK">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -62,7 +62,7 @@
         <!--Navigation Controller-->
         <scene sceneID="FsP-D9-yko">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pCf-5Z-ibu" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="CameraNavC" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="pCf-5Z-ibu" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="MR1-M0-1LT">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -76,6 +76,56 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EUj-8e-gvq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="136.80000000000001" y="-564.46776611694156"/>
+        </scene>
+        <!--Audio View Controller-->
+        <scene sceneID="xOP-PB-WsE">
+            <objects>
+                <viewController id="fMO-ar-C8M" customClass="AudioViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="d8i-3T-7Jt"/>
+                        <viewControllerLayoutGuide type="bottom" id="cdp-kx-gPj"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Bcg-mf-5yR">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="NgF-WN-U0Y">
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="pause" id="GFv-sJ-Bw2">
+                                <connections>
+                                    <action selector="clickPauseItem:" destination="fMO-ar-C8M" id="fYb-OU-5AP"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="play" id="ZSR-bz-riN">
+                                <connections>
+                                    <action selector="clickPlayItem:" destination="fMO-ar-C8M" id="Z7t-0j-4mV"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="98b-jp-hab" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="990" y="135"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="DAO-Hy-4hs">
+            <objects>
+                <navigationController storyboardIdentifier="VideoNavC" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="5hO-4C-2aK" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="LRk-Vf-wAR">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="fMO-ar-C8M" kind="relationship" relationship="rootViewController" id="eRD-2H-8AE"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L8Y-e6-WCQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="135.38230884557723"/>
         </scene>
     </scenes>
 </document>

@@ -15,6 +15,13 @@
 		6A8849C7216064050039FDA5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849C6216064050039FDA5 /* main.m */; };
 		6A8849D621606D980039FDA5 /* UIImage+XRArrow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */; };
 		6A8849D821606F980039FDA5 /* XRKit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 6A8849D721606F980039FDA5 /* XRKit.podspec */; };
+		6A9337FB21BF5122000AC579 /* XRAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9337FA21BF5122000AC579 /* XRAudioPlayer.m */; };
+		6A9337FE21BF5144000AC579 /* XRAudioPlayer+AudioQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9337FD21BF5144000AC579 /* XRAudioPlayer+AudioQueue.m */; };
+		6A93380121BF516C000AC579 /* XRAudioRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A93380021BF516C000AC579 /* XRAudioRecorder.m */; };
+		6A93380421BF5183000AC579 /* XRAudioRecorder+AudioQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A93380321BF5183000AC579 /* XRAudioRecorder+AudioQueue.m */; };
+		6A93380721BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A93380621BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m */; };
+		6A93380A21BF8858000AC579 /* AudioViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A93380921BF8858000AC579 /* AudioViewController.m */; };
+		6A93380C21BF9002000AC579 /* output.caf in Resources */ = {isa = PBXBuildFile; fileRef = 6A93380B21BF9002000AC579 /* output.caf */; };
 		6A9AC4A62175815F0040730A /* SubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9AC4A52175815F0040730A /* SubViewController.m */; };
 		6A9AC4A82175B00A0040730A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A9AC4A72175B00A0040730A /* AVFoundation.framework */; };
 		6A9C6780217461BD002CD759 /* XRCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9C677F217461BD002CD759 /* XRCameraViewController.m */; };
@@ -35,6 +42,19 @@
 		6A8849D421606D980039FDA5 /* UIImage+XRArrow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+XRArrow.h"; sourceTree = "<group>"; };
 		6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+XRArrow.m"; sourceTree = "<group>"; };
 		6A8849D721606F980039FDA5 /* XRKit.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = XRKit.podspec; path = ../XRKit.podspec; sourceTree = "<group>"; };
+		6A9337F921BF5122000AC579 /* XRAudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRAudioPlayer.h; sourceTree = "<group>"; };
+		6A9337FA21BF5122000AC579 /* XRAudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRAudioPlayer.m; sourceTree = "<group>"; };
+		6A9337FC21BF5144000AC579 /* XRAudioPlayer+AudioQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XRAudioPlayer+AudioQueue.h"; sourceTree = "<group>"; };
+		6A9337FD21BF5144000AC579 /* XRAudioPlayer+AudioQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XRAudioPlayer+AudioQueue.m"; sourceTree = "<group>"; };
+		6A9337FF21BF516C000AC579 /* XRAudioRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRAudioRecorder.h; sourceTree = "<group>"; };
+		6A93380021BF516C000AC579 /* XRAudioRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRAudioRecorder.m; sourceTree = "<group>"; };
+		6A93380221BF5183000AC579 /* XRAudioRecorder+AudioQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XRAudioRecorder+AudioQueue.h"; sourceTree = "<group>"; };
+		6A93380321BF5183000AC579 /* XRAudioRecorder+AudioQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XRAudioRecorder+AudioQueue.m"; sourceTree = "<group>"; };
+		6A93380521BF84BA000AC579 /* XRAudioRecorder+AudioUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XRAudioRecorder+AudioUnit.h"; sourceTree = "<group>"; };
+		6A93380621BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XRAudioRecorder+AudioUnit.m"; sourceTree = "<group>"; };
+		6A93380821BF8858000AC579 /* AudioViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioViewController.h; sourceTree = "<group>"; };
+		6A93380921BF8858000AC579 /* AudioViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioViewController.m; sourceTree = "<group>"; };
+		6A93380B21BF9002000AC579 /* output.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = output.caf; sourceTree = "<group>"; };
 		6A9AC4A42175815F0040730A /* SubViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SubViewController.h; sourceTree = "<group>"; };
 		6A9AC4A52175815F0040730A /* SubViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SubViewController.m; sourceTree = "<group>"; };
 		6A9AC4A72175B00A0040730A /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -85,11 +105,14 @@
 				6A8849BB216064030039FDA5 /* ViewController.m */,
 				6A9AC4A42175815F0040730A /* SubViewController.h */,
 				6A9AC4A52175815F0040730A /* SubViewController.m */,
+				6A93380821BF8858000AC579 /* AudioViewController.h */,
+				6A93380921BF8858000AC579 /* AudioViewController.m */,
 				6A8849BD216064030039FDA5 /* Main.storyboard */,
 				6A8849C0216064050039FDA5 /* Assets.xcassets */,
 				6A8849C2216064050039FDA5 /* LaunchScreen.storyboard */,
 				6A8849C5216064050039FDA5 /* Info.plist */,
 				6A8849C6216064050039FDA5 /* main.m */,
+				6A93380B21BF9002000AC579 /* output.caf */,
 			);
 			path = XRKit;
 			sourceTree = "<group>";
@@ -97,6 +120,7 @@
 		6A8849CD2160655C0039FDA5 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				6A9337F821BF504F000AC579 /* Audio */,
 				6A9C677D21746165002CD759 /* Camera */,
 				6A8849D321606D980039FDA5 /* Image */,
 			);
@@ -125,6 +149,23 @@
 				6A8849D521606D980039FDA5 /* UIImage+XRArrow.m */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		6A9337F821BF504F000AC579 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				6A9337F921BF5122000AC579 /* XRAudioPlayer.h */,
+				6A9337FA21BF5122000AC579 /* XRAudioPlayer.m */,
+				6A9337FC21BF5144000AC579 /* XRAudioPlayer+AudioQueue.h */,
+				6A9337FD21BF5144000AC579 /* XRAudioPlayer+AudioQueue.m */,
+				6A9337FF21BF516C000AC579 /* XRAudioRecorder.h */,
+				6A93380021BF516C000AC579 /* XRAudioRecorder.m */,
+				6A93380221BF5183000AC579 /* XRAudioRecorder+AudioQueue.h */,
+				6A93380321BF5183000AC579 /* XRAudioRecorder+AudioQueue.m */,
+				6A93380521BF84BA000AC579 /* XRAudioRecorder+AudioUnit.h */,
+				6A93380621BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		6A9C677D21746165002CD759 /* Camera */ = {
@@ -198,6 +239,7 @@
 				6A8849C4216064050039FDA5 /* LaunchScreen.storyboard in Resources */,
 				6A8849C1216064050039FDA5 /* Assets.xcassets in Resources */,
 				6A8849BF216064030039FDA5 /* Main.storyboard in Resources */,
+				6A93380C21BF9002000AC579 /* output.caf in Resources */,
 				6A8849D821606F980039FDA5 /* XRKit.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -209,11 +251,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A93380121BF516C000AC579 /* XRAudioRecorder.m in Sources */,
+				6A93380721BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m in Sources */,
 				6A9C6780217461BD002CD759 /* XRCameraViewController.m in Sources */,
 				6A8849BC216064030039FDA5 /* ViewController.m in Sources */,
 				6A9C678321746211002CD759 /* XRCameraManager.m in Sources */,
+				6A9337FB21BF5122000AC579 /* XRAudioPlayer.m in Sources */,
 				6A8849D621606D980039FDA5 /* UIImage+XRArrow.m in Sources */,
+				6A9337FE21BF5144000AC579 /* XRAudioPlayer+AudioQueue.m in Sources */,
 				6A9AC4A62175815F0040730A /* SubViewController.m in Sources */,
+				6A93380421BF5183000AC579 /* XRAudioRecorder+AudioQueue.m in Sources */,
+				6A93380A21BF8858000AC579 /* AudioViewController.m in Sources */,
 				6A8849C7216064050039FDA5 /* main.m in Sources */,
 				6A8849B9216064030039FDA5 /* AppDelegate.m in Sources */,
 			);
