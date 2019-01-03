@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6A1A156721DDFED600210626 /* XRAudioUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1A156621DDFED600210626 /* XRAudioUnit.m */; };
 		6A8849B9216064030039FDA5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849B8216064030039FDA5 /* AppDelegate.m */; };
 		6A8849BC216064030039FDA5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A8849BB216064030039FDA5 /* ViewController.m */; };
 		6A8849BF216064030039FDA5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A8849BD216064030039FDA5 /* Main.storyboard */; };
@@ -29,6 +30,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6A1A156521DDFED600210626 /* XRAudioUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRAudioUnit.h; sourceTree = "<group>"; };
+		6A1A156621DDFED600210626 /* XRAudioUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRAudioUnit.m; sourceTree = "<group>"; };
 		6A8849B4216064030039FDA5 /* XRKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XRKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A8849B7216064030039FDA5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6A8849B8216064030039FDA5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -164,6 +167,8 @@
 				6A93380321BF5183000AC579 /* XRAudioRecorder+AudioQueue.m */,
 				6A93380521BF84BA000AC579 /* XRAudioRecorder+AudioUnit.h */,
 				6A93380621BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m */,
+				6A1A156521DDFED600210626 /* XRAudioUnit.h */,
+				6A1A156621DDFED600210626 /* XRAudioUnit.m */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A1A156721DDFED600210626 /* XRAudioUnit.m in Sources */,
 				6A93380121BF516C000AC579 /* XRAudioRecorder.m in Sources */,
 				6A93380721BF84BA000AC579 /* XRAudioRecorder+AudioUnit.m in Sources */,
 				6A9C6780217461BD002CD759 /* XRCameraViewController.m in Sources */,

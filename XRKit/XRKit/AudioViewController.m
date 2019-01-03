@@ -31,18 +31,18 @@
 #pragma mark - Click Item
 
 - (IBAction)clickPlayItem:(UIBarButtonItem *)sender {
-    BOOL result = [self.audioPlayer startPlayer];
-    NSLog(@"result:%@",@(result));
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, 1.0*NSEC_PER_SEC);
-    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self readAudio];
-    });
-//    [self.audioRecorder startAudioQueueRecord:nil];
+//    BOOL result = [self.audioPlayer startPlayer];
+//    NSLog(@"result:%@",@(result));
+//    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, 1.0*NSEC_PER_SEC);
+//    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+//        [self readAudio];
+//    });
+    [self.audioRecorder startAudioQueueRecord:nil];
 }
 
 - (IBAction)clickPauseItem:(UIBarButtonItem *)sender {
-    [self.audioPlayer stopPlayer];
-//    [self.audioRecorder stopAudioQueueRecord];
+//    [self.audioPlayer stopPlayer];
+    [self.audioRecorder stopAudioQueueRecord];
 }
 
 - (void)readAudio {
