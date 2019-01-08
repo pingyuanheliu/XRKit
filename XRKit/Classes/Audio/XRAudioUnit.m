@@ -11,6 +11,13 @@
 #define kOutputBus  0
 #define kInputBus   1
 
+typedef NS_ENUM(NSInteger, XRAudioStatus) {
+    XRAudioDefault = 0,     //默认状态
+    XRAudioPlaying = 1,     //播放音频
+    XRAudioRecording = 2,   //录制音频
+};
+
+
 @interface XRAudioUnit ()
 {
     //
@@ -18,6 +25,8 @@
     ExtAudioFileRef             _audioFileRef;
     AudioComponentInstance      _audioUnit;
 }
+//音频状态
+@property (nonatomic, assign) NSInteger audioStatus;
 
 @end
 
@@ -124,6 +133,8 @@
     return ioUnitDescription;
 }
 
+#pragma mark -
+
 - (OSStatus)createAudioInstance {
     AudioComponentDescription description = [self audioComponent];
     AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
@@ -136,11 +147,12 @@
 }
 
 - (OSStatus)disposeAudioInstance {
-    OSStatus status = AudioComponentInstanceDispose(_audioUnit);
+    OSStatus status;
+    status = AudioUnitUninitialize(_audioUnit);
     if (status != noErr) {
         return status;
     }
-    status = AudioUnitUninitialize(_audioUnit);
+    status = AudioComponentInstanceDispose(_audioUnit);
     return status;
 }
 
@@ -187,6 +199,18 @@
 }
 
 #pragma mark - Recording Callback
+
+/**
+ 录音回调
+
+ @param inRefCon inRefCon
+ @param ioActionFlags ioActionFlags
+ @param inTimeStamp inTimeStamp
+ @param inBusNumber inBusNumber
+ @param inNumberFrames inNumberFrames
+ @param ioData ioData
+ @return 状态
+ */
 static OSStatus recordingCallback(void *inRefCon,
                                   AudioUnitRenderActionFlags *ioActionFlags,
                                   const AudioTimeStamp *inTimeStamp,
@@ -199,6 +223,18 @@ static OSStatus recordingCallback(void *inRefCon,
 }
 
 #pragma mark - playing Callback
+
+/**
+ 播放音频回调
+
+ @param inRefCon inRefCon
+ @param ioActionFlags ioActionFlags
+ @param inTimeStamp inTimeStamp
+ @param inBusNumber inBusNumber
+ @param inNumberFrames inNumberFrames
+ @param ioData ioData
+ @return 状态
+ */
 static OSStatus playingCallback(void *inRefCon,
                                 AudioUnitRenderActionFlags *ioActionFlags,
                                 const AudioTimeStamp *inTimeStamp,
@@ -212,24 +248,83 @@ static OSStatus playingCallback(void *inRefCon,
 
 #pragma mark - Set Callback
 
-- (OSStatus)setCallBack {
+/**
+ 设置录音
+
+ @param on 是否开启
+ @return 状态
+ */
+- (OSStatus)setRecorderCallBack:(BOOL)on {
+    //设置属性
+    UInt32 enable;
+    if (on) {
+        enable = 1;
+    }else {
+        enable = 0;
+    }
+    OSStatus status;
+    status = AudioUnitSetProperty(_audioUnit,
+                                  kAudioOutputUnitProperty_EnableIO,
+                                  kAudioUnitScope_Input,
+                                  kInputBus,
+                                  &enable,
+                                  sizeof(enable));
+    if (status != noErr) {
+        return status;
+    }
     // Set input callback
     AURenderCallbackStruct recorderStruct;
-    recorderStruct.inputProc = recordingCallback;
-    recorderStruct.inputProcRefCon = (__bridge void * _Nullable)(self);
-    OSStatus status = AudioUnitSetProperty(_audioUnit,
+    if (on) {
+        recorderStruct.inputProc = recordingCallback;
+        recorderStruct.inputProcRefCon = (__bridge void * _Nullable)(self);
+    }else {
+        recorderStruct.inputProc = 0;
+        recorderStruct.inputProcRefCon = 0;
+    }
+    status = AudioUnitSetProperty(_audioUnit,
                                   kAudioOutputUnitProperty_SetInputCallback,
                                   kAudioUnitScope_Input,
                                   kInputBus,
                                   &recorderStruct,
                                   sizeof(recorderStruct));
+    return status;
+}
+
+
+/**
+ 设置播放
+
+ @param on 是否开启
+ @return 状态
+ */
+- (OSStatus)setPlayerCallBack:(BOOL)on {
+    //设置属性
+    UInt32 enable;
+    if (on) {
+        enable = 1;
+    }else {
+        enable = 0;
+    }
+    OSStatus status;
+    status = AudioUnitSetProperty(_audioUnit,
+                                  kAudioOutputUnitProperty_EnableIO,
+                                  kAudioUnitScope_Output,
+                                  kOutputBus,
+                                  &enable,
+                                  sizeof(enable));
     if (status != noErr) {
         return status;
     }
     // Set output callback
     AURenderCallbackStruct playerStruct;
-    playerStruct.inputProc = playingCallback;
-    playerStruct.inputProcRefCon = 0;
+    if (on) {
+        playerStruct.inputProc = playingCallback;
+        playerStruct.inputProcRefCon = (__bridge void * _Nullable)(self);
+    }else {
+        playerStruct.inputProc = 0;
+        playerStruct.inputProcRefCon = 0;
+    }
+    //设置属性
     status = AudioUnitSetProperty(_audioUnit,
                                   kAudioUnitProperty_SetRenderCallback,
                                   kAudioUnitScope_Input,
@@ -237,6 +332,133 @@ static OSStatus playingCallback(void *inRefCon,
                                   &playerStruct,
                                   sizeof(playerStruct));
     return status;
+}
+
+#pragma mark - Public Methods
+
+- (OSStatus)startAudioUnit {
+    AudioComponentDescription description = [self audioComponent];
+    AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
+    OSStatus status = AudioComponentInstanceNew(foundIoUnitReference, &_audioUnit);
+    if (status != noErr) {
+        return status;
+    }
+    AudioStreamBasicDescription audioDesc = [self pcmAudioStreamDescription];
+    status = [self setStreamFormat:audioDesc];
+    //
+    return status;
+}
+
+- (OSStatus)stopAudioUnit {
+    OSStatus status;
+    AudioStreamBasicDescription audioDesc = [self resetAudioStreamDescription];
+    status = [self setStreamFormat:audioDesc];
+    NSLog(@"stop audio 1 status:%@",@(status));
+    status = AudioOutputUnitStop(_audioUnit);
+    NSLog(@"stop audio 2 status:%@",@(status));
+    status = AudioUnitUninitialize(_audioUnit);
+    NSLog(@"stop audio 3 status:%@",@(status));
+    status = AudioComponentInstanceDispose(_audioUnit);
+    NSLog(@"stop audio 4 status:%@",@(status));
+    status = ExtAudioFileDispose(_audioFileRef);
+    NSLog(@"stop audio 5 status:%@",@(status));
+    return status;
+}
+
+
+#pragma mark -
+
+- (void)listenRecordedData:(void (^)(AudioBuffer inBuffer))recorded {
+    
+}
+
+/**
+ 开始录音
+ */
+- (BOOL)startAudioUnitRecorder {
+    if (self.audioStatus & XRAudioRecording) {
+        //已经在录音
+        return NO;
+    }
+    //创建本地录音保存文件
+    [self createSaveFile];
+    //开启录音
+    OSStatus status = [self setRecorderCallBack:YES];
+    if (status == noErr) {
+        self.audioStatus = (self.audioStatus | XRAudioRecording);
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+/**
+ 停止录音
+ */
+- (BOOL)stopAudioUnitRecorder {
+    if (self.audioStatus & XRAudioRecording) {//已经在录音
+        //停止录音
+        OSStatus status = [self setRecorderCallBack:NO];
+        if (status == noErr) {
+            if (self.audioStatus & XRAudioPlaying) {
+                //在播放
+                self.audioStatus = XRAudioPlaying;
+            }else {
+                //不在播放
+                self.audioStatus = XRAudioDefault;
+            }
+            //释放录音文件
+            [self releaseSaveFile];
+            return YES;
+        }else {
+            return NO;
+        }
+    }
+    return NO;
+}
+
+#pragma mark -
+/**
+ 开始播放
+ 
+ @return 结果
+ */
+- (BOOL)startAudioUnitPlayer {
+    if (self.audioStatus & XRAudioPlaying) {
+        //已经在播放
+        return NO;
+    }
+    OSStatus status = [self setPlayerCallBack:YES];
+    if (status == noErr) {
+        self.audioStatus = (self.audioStatus | XRAudioPlaying);
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+/**
+ 停止播放
+ 
+ @return 结果
+ */
+- (BOOL)stopAudioUnitPlayer {
+    if (self.audioStatus & XRAudioPlaying) {//已经在播放
+        OSStatus status = [self setPlayerCallBack:NO];
+        if (status == noErr) {
+            if (self.audioStatus & XRAudioRecording) {
+                //在录音
+                self.audioStatus = XRAudioRecording;
+            }else {
+                //不在录音
+                self.audioStatus = XRAudioDefault;
+            }
+            return YES;
+        }else {
+            return NO;
+        }
+    }
+    return NO;
 }
 
 @end

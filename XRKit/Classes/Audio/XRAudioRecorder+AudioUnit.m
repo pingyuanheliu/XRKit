@@ -221,6 +221,8 @@ static OSStatus AURecordingCallback(void *inRefCon,
         self.recording = NO;
         OSStatus status = AudioOutputUnitStop(_audioUnit);
         NSLog(@"status:%@",@(status));
+        status = AudioUnitUninitialize(_audioUnit);
+        NSLog(@"status:%@",@(status));
         status = AudioComponentInstanceDispose(_audioUnit);
         NSLog(@"status:%@",@(status));
         status = ExtAudioFileDispose(_audioFileRef);
