@@ -27,6 +27,8 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 }
 //音频状态
 @property (nonatomic, assign) NSInteger audioStatus;
+//录音回调
+@property (nonatomic, strong) void (^receiveAudioBuffer)(AudioBuffer inBuffer);
 
 @end
 
@@ -158,6 +160,10 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 
 #pragma mark - 录音文件保存路径
 
+- (ExtAudioFileRef)audioFileRef {
+    return _audioFileRef;
+}
+
 /**
  创建音频保存对象
  */
@@ -218,7 +224,34 @@ static OSStatus recordingCallback(void *inRefCon,
                                   UInt32 inNumberFrames,
                                   AudioBufferList *ioData) {
     OSStatus status = noErr;
-    
+    @autoreleasepool {
+        XRAudioUnit *recorder = (__bridge XRAudioUnit *)(inRefCon);
+        AudioBufferList bufferList;
+        UInt16 numSamples = inNumberFrames;
+        UInt16 samples[numSamples];
+        memset (&samples, 0, sizeof (samples));
+        bufferList.mNumberBuffers = 1;
+        bufferList.mBuffers[0].mData = samples;
+        bufferList.mBuffers[0].mNumberChannels = 1;
+        bufferList.mBuffers[0].mDataByteSize = numSamples*sizeof(UInt16);
+        
+        AudioComponentInstance audioUnit = [recorder audioUnit];
+        
+        status = AudioUnitRender(audioUnit,
+                                 ioActionFlags,
+                                 inTimeStamp,
+                                 inBusNumber,
+                                 inNumberFrames,
+                                 &bufferList);
+        AudioBuffer inBuffer = bufferList.mBuffers[0];
+        if (inBuffer.mDataByteSize > 0) {
+            if (recorder.receiveAudioBuffer) {
+                recorder.receiveAudioBuffer(inBuffer);
+            }
+        }
+        ExtAudioFileRef audioFileRef = [recorder audioFileRef];
+        ExtAudioFileWriteAsync(audioFileRef, inNumberFrames, &bufferList);
+    }
     return status;
 }
 
@@ -336,6 +369,10 @@ static OSStatus playingCallback(void *inRefCon,
 
 #pragma mark - Public Methods
 
+- (AudioComponentInstance)audioUnit {
+    return _audioUnit;
+}
+
 - (OSStatus)startAudioUnit {
     AudioComponentDescription description = [self audioComponent];
     AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
@@ -345,6 +382,14 @@ static OSStatus playingCallback(void *inRefCon,
     }
     AudioStreamBasicDescription audioDesc = [self pcmAudioStreamDescription];
     status = [self setStreamFormat:audioDesc];
+    UInt32 disable = 0;
+    // Disable buffer allocation for the recorder (optional - do this if we want to pass in our own)
+    status = AudioUnitSetProperty(_audioUnit,
+                                  kAudioUnitProperty_ShouldAllocateBuffer,
+                                  kAudioUnitScope_Output,
+                                  kInputBus,
+                                  &disable,
+                                  sizeof(disable));
     //
     return status;
 }
