@@ -7,9 +7,12 @@
 //
 
 #import "XRAudioUnit.h"
+#import <AVFoundation/AVFoundation.h>
 
 #define kOutputBus  0
 #define kInputBus   1
+
+#define CONST_BUFFER_SIZE 2048*2*10
 
 typedef NS_ENUM(NSInteger, XRAudioStatus) {
     XRAudioDefault = 0,     //默认状态
@@ -20,10 +23,13 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 
 @interface XRAudioUnit ()
 {
-    //
+    //描述
     AudioStreamBasicDescription _audioFormat;
     ExtAudioFileRef             _audioFileRef;
     AudioComponentInstance      _audioUnit;
+    //播放音频输入流
+    NSInputStream *_inputSteam;
+    Byte *_buffer;
 }
 //音频状态
 @property (nonatomic, assign) NSInteger audioStatus;
@@ -40,7 +46,29 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 {
     self = [super init];
     if (self) {
-        _audioFormat = [self pcmAudioStreamDescription];
+        NSError *error;
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        [session requestRecordPermission:^(BOOL granted) {
+            if (granted) {
+                NSLog(@"==YES==");
+            }else {
+                NSLog(@"==NO==");
+            }
+        }];
+        if (@available(iOS 10.0, *)) {
+            [session setCategory:AVAudioSessionCategoryPlayAndRecord
+                            mode:AVAudioSessionModeVideoChat
+                         options:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
+        }
+        if (error != nil) {
+            NSLog(@"error:%@",error);
+        }
+        [session setActive: YES error:&error];
+        if (error != nil) {
+            NSLog(@"error:%@",error);
+        }
+        [self startAudioUnit];
+        
     }
     return self;
 }
@@ -72,6 +100,7 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
     audioFormat.mFramesPerPacket = 1;
     //
     audioFormat.mBytesPerPacket = audioFormat.mBytesPerFrame;
+    _audioFormat = audioFormat;
     return audioFormat;
 }
 
@@ -164,6 +193,7 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
     return _audioFileRef;
 }
 
+#pragma mark -
 /**
  创建音频保存对象
  */
@@ -202,6 +232,25 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
             NSLog(@"==realease save file error==");
         }
     }
+}
+
+#pragma mark - 播放音频
+
+- (void)openPlayFile {
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"output" withExtension:@"caf"];
+    _inputSteam = [NSInputStream inputStreamWithURL:url];
+    if (_inputSteam != nil) {
+        [_inputSteam open];
+    }
+    _buffer = malloc(CONST_BUFFER_SIZE);
+}
+
+- (void)closePlayFile {
+    if (_inputSteam != nil) {
+        [_inputSteam close];
+        _inputSteam = nil;
+    }
+    free(_buffer);
 }
 
 #pragma mark - Recording Callback
@@ -275,7 +324,30 @@ static OSStatus playingCallback(void *inRefCon,
                                 UInt32 inNumberFrames,
                                 AudioBufferList *ioData) {
     OSStatus status = noErr;
-    
+    @autoreleasepool {
+        XRAudioUnit *audioUnit = (__bridge XRAudioUnit *)(inRefCon);
+        //
+        AudioBufferList bufferList;
+        UInt16 numSamples = inNumberFrames;
+        UInt16 samples[numSamples];
+        memset (&samples, 0, sizeof (samples));
+        bufferList.mNumberBuffers = 1;
+        bufferList.mBuffers[0].mData = samples;
+        bufferList.mBuffers[0].mNumberChannels = 1;
+        bufferList.mBuffers[0].mDataByteSize = numSamples*sizeof(UInt16);
+        //
+        UInt32 size = numSamples*sizeof(UInt16);
+        NSInteger bytes = size < ioData->mBuffers[1].mDataByteSize * 2 ? size : ioData->mBuffers[1].mDataByteSize * 2;
+        bytes = [audioUnit->_inputSteam read:audioUnit->_buffer maxLength:bytes];
+        for (int i = 0; i < bytes; ++i) {
+            ((Byte*)ioData->mBuffers[1].mData)[i/2] = audioUnit->_buffer[i];
+        }
+        ioData->mBuffers[1].mDataByteSize = (UInt32)bytes / 2;
+        
+        if (ioData->mBuffers[1].mDataByteSize < ioData->mBuffers[0].mDataByteSize) {
+            ioData->mBuffers[0].mDataByteSize = ioData->mBuffers[1].mDataByteSize;
+        }
+    }
     return status;
 }
 
@@ -334,7 +406,7 @@ static OSStatus playingCallback(void *inRefCon,
     //设置属性
     UInt32 enable;
     if (on) {
-        enable = 1;
+        enable = 0;
     }else {
         enable = 0;
     }
@@ -373,6 +445,7 @@ static OSStatus playingCallback(void *inRefCon,
     return _audioUnit;
 }
 
+#pragma mark -
 - (OSStatus)startAudioUnit {
     AudioComponentDescription description = [self audioComponent];
     AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
@@ -382,6 +455,9 @@ static OSStatus playingCallback(void *inRefCon,
     }
     AudioStreamBasicDescription audioDesc = [self pcmAudioStreamDescription];
     status = [self setStreamFormat:audioDesc];
+    if (status != noErr) {
+        return status;
+    }
     UInt32 disable = 0;
     // Disable buffer allocation for the recorder (optional - do this if we want to pass in our own)
     status = AudioUnitSetProperty(_audioUnit,
@@ -417,6 +493,7 @@ static OSStatus playingCallback(void *inRefCon,
     
 }
 
+#pragma mark -
 /**
  开始录音
  */
@@ -475,8 +552,21 @@ static OSStatus playingCallback(void *inRefCon,
     }
     OSStatus status = [self setPlayerCallBack:YES];
     if (status == noErr) {
-        self.audioStatus = (self.audioStatus | XRAudioPlaying);
-        return YES;
+        status = [self setRecorderCallBack:NO];
+        if (status == noErr) {
+            status = AudioUnitInitialize(_audioUnit);
+            if (status != noErr) {
+                return NO;
+            }
+            status = AudioOutputUnitStart(_audioUnit);
+            if (status != noErr) {
+                return NO;
+            }
+            self.audioStatus = (self.audioStatus | XRAudioPlaying);
+            return YES;
+        }else {
+            return NO;
+        }
     }else {
         return NO;
     }

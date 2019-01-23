@@ -12,4 +12,28 @@
 
 @interface XRAudioUnit : NSObject
 
+/**
+ 开始录音
+ */
+- (BOOL)startAudioUnitRecorder;
+
+/**
+ 停止录音
+ */
+- (BOOL)stopAudioUnitRecorder;
+
+/**
+ 开始播放
+ 
+ @return 结果
+ */
+- (BOOL)startAudioUnitPlayer;
+
+/**
+ 停止播放
+ 
+ @return 结果
+ */
+- (BOOL)stopAudioUnitPlayer;
+
 @end

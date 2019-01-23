@@ -11,6 +11,7 @@
 #import "XRAudioPlayer+AudioQueue.h"
 #import "XRAudioRecorder.h"
 #import "XRAudioRecorder+AudioQueue.h"
+#import "XRAudioUnit.h"
 
 #import "XRPhoto.h"
 #import "XRPhotoBrowser.h"
@@ -19,6 +20,7 @@
 
 @property (nonatomic, strong) XRAudioPlayer *audioPlayer;
 @property (nonatomic, strong) XRAudioRecorder *audioRecorder;
+@property (nonatomic, strong) XRAudioUnit *audioUnit;
 
 @end
 
@@ -29,6 +31,7 @@
     // Do any additional setup after loading the view.
     self.audioPlayer = [[XRAudioPlayer alloc] init];
     self.audioRecorder = [[XRAudioRecorder alloc] init];
+    self.audioUnit = [[XRAudioUnit alloc] init];
 }
 
 #pragma mark - Click Item
@@ -40,12 +43,14 @@
 //    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 //        [self readAudio];
 //    });
-    [self.audioRecorder startAudioQueueRecord:nil];
+//    [self.audioRecorder startAudioQueueRecord:nil];
+    [self.audioUnit startAudioUnitPlayer];
 }
 
 - (IBAction)clickPauseItem:(UIBarButtonItem *)sender {
 //    [self.audioPlayer stopPlayer];
-    [self.audioRecorder stopAudioQueueRecord];
+//    [self.audioRecorder stopAudioQueueRecord];
+    [self.audioUnit stopAudioUnitPlayer];
 }
 
 - (void)readAudio {
