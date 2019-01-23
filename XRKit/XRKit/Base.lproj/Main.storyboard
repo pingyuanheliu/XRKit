@@ -91,11 +91,18 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="NgF-WN-U0Y">
-                        <barButtonItem key="leftBarButtonItem" systemItem="search" id="AoW-gR-NxA">
-                            <connections>
-                                <segue destination="LMY-Wp-KMD" kind="show" id="iCp-2T-7mG"/>
-                            </connections>
-                        </barButtonItem>
+                        <leftBarButtonItems>
+                            <barButtonItem systemItem="search" id="AoW-gR-NxA">
+                                <connections>
+                                    <segue destination="LMY-Wp-KMD" kind="show" id="iCp-2T-7mG"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="camera" id="6GI-GM-Dpd">
+                                <connections>
+                                    <action selector="clickPhotoItem:" destination="fMO-ar-C8M" id="nGY-lK-5wW"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <rightBarButtonItems>
                             <barButtonItem systemItem="pause" id="GFv-sJ-Bw2">
                                 <connections>

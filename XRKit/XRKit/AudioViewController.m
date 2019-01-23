@@ -12,6 +12,9 @@
 #import "XRAudioRecorder.h"
 #import "XRAudioRecorder+AudioQueue.h"
 
+#import "XRPhoto.h"
+#import "XRPhotoBrowser.h"
+
 @interface AudioViewController ()
 
 @property (nonatomic, strong) XRAudioPlayer *audioPlayer;
@@ -75,6 +78,14 @@
     [inputStream close];
 }
 
+#pragma mark -
+
+- (IBAction)clickPhotoItem:(id)sender {
+    XRPhoto *photo = [[XRPhoto alloc] init];
+    NSArray *array = @[photo,photo,photo,photo,photo];
+    XRPhotoBrowser *browerVC = [[XRPhotoBrowser alloc] initWithPhotos:array];
+    [self.navigationController pushViewController:browerVC animated:YES];
+}
 /*
 #pragma mark - Navigation
 

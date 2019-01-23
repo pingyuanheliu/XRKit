@@ -12,10 +12,14 @@
 
 @interface XRPhotoBrowser ()<UIScrollViewDelegate>
 {
+    //视图是否出现
+    BOOL _viewIsAppear;
     //图片计数
     NSUInteger _photoCount;
     //页面滚动视图
     UIScrollView *_pageScrollView;
+    //当前显示页码
+    NSUInteger _currentPageIndex;
 }
 
 //固定不变的图片数组
@@ -61,10 +65,34 @@
     return self;
 }
 
+#pragma mark -
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.view.backgroundColor = [UIColor lightGrayColor];
+    //自定义UI
     [self customUI];
+}
+
+#pragma mark -
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    _viewIsAppear = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    _viewIsAppear = NO;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
 }
 
 #pragma mark - Init
@@ -74,6 +102,7 @@
  */
 - (void)initialDefine {
     _photoCount = NSNotFound;
+    _viewIsAppear = NO;
 }
 
 /**
@@ -86,9 +115,11 @@
         _pageScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _pageScrollView.pagingEnabled = YES;
         _pageScrollView.delegate = self;
-        _pageScrollView.showsVerticalScrollIndicator = NO;
-        _pageScrollView.showsHorizontalScrollIndicator = NO;
-        _pageScrollView.backgroundColor = [UIColor colorWithRed:0x10/255.0 green:0x13/255.0 blue:0x15/255.0 alpha:1.0];
+        _pageScrollView.showsVerticalScrollIndicator = YES;
+        _pageScrollView.showsHorizontalScrollIndicator = YES;
+        _pageScrollView.backgroundColor = [UIColor redColor];//[UIColor colorWithRed:0x10/255.0 green:0x13/255.0 blue:0x15/255.0 alpha:1.0];
+        _pageScrollView.contentSize = [self contentSizeForPageScrollView];
+        [self.view addSubview:_pageScrollView];
     }
 }
 
@@ -118,7 +149,46 @@
 - (CGSize)contentSizeForPageScrollView {
     // We have to use the paging scroll view's bounds to calculate the contentSize, for the same reason outlined above.
     CGRect bounds = _pageScrollView.bounds;
-    return CGSizeMake(bounds.size.width * [self numberOfPhotos], bounds.size.height);
+    CGSize size = CGSizeMake(bounds.size.width * [self numberOfPhotos], bounds.size.height);
+    return size;
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (!_viewIsAppear) {
+        return;
+    }
+    // Calculate current page
+    CGRect visibleBounds = _pageScrollView.bounds;
+    NSInteger index = (NSInteger)(floorf(CGRectGetMidX(visibleBounds) / CGRectGetWidth(visibleBounds)));
+    if (index < 0) index = 0;
+    if (index > [self numberOfPhotos] - 1) index = [self numberOfPhotos] - 1;
+    _currentPageIndex = index;
+    NSLog(@"index:%ld",index);
+}
+
+// called on start of dragging (may require some time and or distance to move)
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    
+}
+
+// called on finger up if the user dragged. velocity is in points/millisecond. targetContentOffset may be changed to adjust where the scroll view comes to rest
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+    
+}
+
+// called on finger up if the user dragged. decelerate is true if it will continue moving afterwards
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
 }
 
 /*
