@@ -57,13 +57,13 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
         }];
         if (@available(iOS 10.0, *)) {
             [session setCategory:AVAudioSessionCategoryPlayAndRecord
-                            mode:AVAudioSessionModeVideoChat
+                            mode:AVAudioSessionModeMeasurement
                          options:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
         }
         if (error != nil) {
             NSLog(@"error:%@",error);
         }
-        [session setActive: YES error:&error];
+        [session setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
         if (error != nil) {
             NSLog(@"error:%@",error);
         }
