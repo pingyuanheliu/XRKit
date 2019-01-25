@@ -29,9 +29,85 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.audioPlayer = [[XRAudioPlayer alloc] init];
-    self.audioRecorder = [[XRAudioRecorder alloc] init];
-    self.audioUnit = [[XRAudioUnit alloc] init];
+//    self.audioPlayer = [[XRAudioPlayer alloc] init];
+//    self.audioRecorder = [[XRAudioRecorder alloc] init];
+    //首先向NSNotificationCenter添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(routeChange:) name:AVAudioSessionRouteChangeNotification object:nil];
+    
+    
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    __weak typeof(self) weakSelf = self;
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session requestRecordPermission:^(BOOL granted) {
+        if (granted) {
+            NSLog(@"==YES==:%@",[NSThread currentThread]);
+            weakSelf.audioUnit = [[XRAudioUnit alloc] init];
+        }else {
+            NSLog(@"==NO==:%@",[NSThread currentThread]);
+        }
+    }];
+}
+
+/**
+ *  一旦输出改变则执行此方法
+ *
+ *  @param notification 输出改变通知对象
+ */
+-(void)routeChange:(NSNotification *)notification{
+    NSLog(@"====notification:%@",[NSThread currentThread]);
+    NSDictionary *userInfo = notification.userInfo;
+    NSLog(@"===userInfo:%@",userInfo);
+    id reasonKey = userInfo[AVAudioSessionRouteChangeReasonKey];
+    if (reasonKey != nil && [reasonKey isKindOfClass:[NSNumber class]]) {
+        switch ([reasonKey integerValue]) {
+            case AVAudioSessionRouteChangeReasonUnknown://0
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonNewDeviceAvailable://1
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonOldDeviceUnavailable://2
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonCategoryChange://3
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonOverride://4
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonWakeFromSleep://6
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory://7
+            {
+                
+            }
+                break;
+            case AVAudioSessionRouteChangeReasonRouteConfigurationChange://8
+            {
+                
+            }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 #pragma mark - Click Item

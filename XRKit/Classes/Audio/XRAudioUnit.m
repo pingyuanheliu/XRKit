@@ -46,31 +46,172 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 {
     self = [super init];
     if (self) {
-        NSError *error;
-        AVAudioSession *session = [AVAudioSession sharedInstance];
-        [session requestRecordPermission:^(BOOL granted) {
-            if (granted) {
-                NSLog(@"==YES==");
-            }else {
-                NSLog(@"==NO==");
-            }
-        }];
-        if (@available(iOS 10.0, *)) {
-            [session setCategory:AVAudioSessionCategoryPlayAndRecord
-                            mode:AVAudioSessionModeMeasurement
-                         options:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
-        }
-        if (error != nil) {
-            NSLog(@"error:%@",error);
-        }
-        [session setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
-        if (error != nil) {
-            NSLog(@"error:%@",error);
-        }
-        [self startAudioUnit];
         
+//        self.audioStatus = XRAudioPlaying;
+//        self.audioStatus = XRAudioRecording;
+        self.audioStatus = XRAudioPlaying | XRAudioRecording;
     }
     return self;
+}
+
+#pragma mark - Setter
+
+- (void)setAudioStatus:(NSInteger)audioStatus {
+    _audioStatus = audioStatus;
+    //状态
+    OSStatus status;
+    //开始
+    if (_audioStatus != XRAudioDefault) {
+        //1-I、改变Session分类
+        [self setAudioSessionCategory];
+        //2-I、AudioComponent Instance New
+        status = [self createAudioInstance];
+        
+        //format property
+        status = [self setAudioUnitProperty];
+        
+        //3-I、Initialize
+        status = AudioUnitInitialize(_audioUnit);
+        //4-I、Start
+        status = AudioOutputUnitStart(_audioUnit);
+    }
+    _audioStatus = XRAudioDefault;
+    //停止
+    if (_audioStatus == XRAudioDefault) {
+        //4-D、Stop
+        status = AudioOutputUnitStop(_audioUnit);
+        //3-D、Uninitialize
+        status = AudioUnitUninitialize(_audioUnit);
+        //2-D、AudioComponent Instance Dispose
+        status = AudioComponentInstanceDispose(_audioUnit);
+        //1-D、改变Session分类
+        [self setAudioSessionCategory];
+    }
+}
+
+#pragma mark - Audio Session
+
+/**
+ 自定义AudioSession
+ */
+- (void)setAudioSessionCategory {
+    NSError *error = nil;
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    NSLog(@"session:%@",session.category);
+    //
+    BOOL playing = (self.audioStatus & XRAudioPlaying);
+    BOOL recording = (self.audioStatus & XRAudioRecording);
+    if (@available(iOS 10.0, *)) {
+        if (playing && recording) {
+            //既播放，也录音
+            [session setCategory:AVAudioSessionCategoryPlayAndRecord
+                            mode:AVAudioSessionModeVideoChat
+                         options:AVAudioSessionCategoryOptionDefaultToSpeaker
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else if (playing) {
+            //仅播放
+            [session setCategory:AVAudioSessionCategoryPlayback
+                            mode:AVAudioSessionModeSpokenAudio
+                         options:AVAudioSessionCategoryOptionMixWithOthers
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else if (recording) {
+            //仅录音
+            [session setCategory:AVAudioSessionCategoryRecord
+                            mode:AVAudioSessionModeMeasurement
+                         options:AVAudioSessionCategoryOptionAllowBluetooth
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else {
+            //既不播放，也不录音
+            [session setCategory:AVAudioSessionCategorySoloAmbient
+                            mode:AVAudioSessionModeDefault
+                         options:0
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:NO
+                   withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }
+    }else {
+        if (playing && recording) {
+            //既播放，也录音
+            [session setCategory:AVAudioSessionCategoryPlayAndRecord
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else if (playing) {
+            //仅播放
+            [session setCategory:AVAudioSessionCategoryPlayback
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else if (recording) {
+            //仅录音
+            [session setCategory:AVAudioSessionCategoryRecord
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:YES
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }else {
+            //既不播放，也不录音
+            [session setCategory:AVAudioSessionCategorySoloAmbient
+                           error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+            [session setActive:NO
+                   withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                         error:&error];
+            if (error != nil) {
+                NSLog(@"error:%@",error);
+            }
+        }
+    }
 }
 
 #pragma mark - Format
@@ -122,13 +263,13 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 /**
  设置音频格式
 
- @param format 格式
  @return 结果
  */
-- (OSStatus)setStreamFormat:(AudioStreamBasicDescription)format {
-    // Apply format
+- (OSStatus)setAudioUnitProperty {
+    OSStatus status;
+    AudioStreamBasicDescription format = [self pcmAudioStreamDescription];
     // 输入
-    OSStatus status = AudioUnitSetProperty(_audioUnit,
+    status = AudioUnitSetProperty(_audioUnit,
                                   kAudioUnitProperty_StreamFormat,
                                   kAudioUnitScope_Input,
                                   0,
@@ -144,6 +285,34 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
                                   1,
                                   &format,
                                   sizeof(format));
+    if (status != noErr) {
+        return status;
+    }
+    //设置Callback
+    if (_audioStatus & XRAudioPlaying) {
+        status = [self setPlayerCallBack:YES];
+    } else {
+        status = [self setPlayerCallBack:NO];
+    }
+    if (status != noErr) {
+        return status;
+    }
+    if (_audioStatus & XRAudioRecording) {
+        status = [self setRecorderCallBack:YES];
+    } else {
+        status = [self setRecorderCallBack:NO];
+    }
+    if (status != noErr) {
+        return status;
+    }
+    // Disable buffer allocation for the recorder (optional - do this if we want to pass in our own)
+    UInt32 flag = 0;
+    status = AudioUnitSetProperty(_audioUnit,
+                                  kAudioUnitProperty_ShouldAllocateBuffer,
+                                  kAudioUnitScope_Output,
+                                  kInputBus,
+                                  &flag,
+                                  sizeof(flag));
     return status;
 }
 
@@ -170,19 +339,11 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
     AudioComponentDescription description = [self audioComponent];
     AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
     OSStatus status = AudioComponentInstanceNew(foundIoUnitReference, &_audioUnit);
-    if (status != noErr) {
-        return status;
-    }
-    status = AudioUnitInitialize(_audioUnit);
     return status;
 }
 
 - (OSStatus)disposeAudioInstance {
     OSStatus status;
-    status = AudioUnitUninitialize(_audioUnit);
-    if (status != noErr) {
-        return status;
-    }
     status = AudioComponentInstanceDispose(_audioUnit);
     return status;
 }
@@ -406,7 +567,7 @@ static OSStatus playingCallback(void *inRefCon,
     //设置属性
     UInt32 enable;
     if (on) {
-        enable = 0;
+        enable = 1;
     }else {
         enable = 0;
     }
@@ -444,48 +605,6 @@ static OSStatus playingCallback(void *inRefCon,
 - (AudioComponentInstance)audioUnit {
     return _audioUnit;
 }
-
-#pragma mark -
-- (OSStatus)startAudioUnit {
-    AudioComponentDescription description = [self audioComponent];
-    AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
-    OSStatus status = AudioComponentInstanceNew(foundIoUnitReference, &_audioUnit);
-    if (status != noErr) {
-        return status;
-    }
-    AudioStreamBasicDescription audioDesc = [self pcmAudioStreamDescription];
-    status = [self setStreamFormat:audioDesc];
-    if (status != noErr) {
-        return status;
-    }
-    UInt32 disable = 0;
-    // Disable buffer allocation for the recorder (optional - do this if we want to pass in our own)
-    status = AudioUnitSetProperty(_audioUnit,
-                                  kAudioUnitProperty_ShouldAllocateBuffer,
-                                  kAudioUnitScope_Output,
-                                  kInputBus,
-                                  &disable,
-                                  sizeof(disable));
-    //
-    return status;
-}
-
-- (OSStatus)stopAudioUnit {
-    OSStatus status;
-    AudioStreamBasicDescription audioDesc = [self resetAudioStreamDescription];
-    status = [self setStreamFormat:audioDesc];
-    NSLog(@"stop audio 1 status:%@",@(status));
-    status = AudioOutputUnitStop(_audioUnit);
-    NSLog(@"stop audio 2 status:%@",@(status));
-    status = AudioUnitUninitialize(_audioUnit);
-    NSLog(@"stop audio 3 status:%@",@(status));
-    status = AudioComponentInstanceDispose(_audioUnit);
-    NSLog(@"stop audio 4 status:%@",@(status));
-    status = ExtAudioFileDispose(_audioFileRef);
-    NSLog(@"stop audio 5 status:%@",@(status));
-    return status;
-}
-
 
 #pragma mark -
 
