@@ -46,10 +46,10 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 {
     self = [super init];
     if (self) {
-        
+        _audioUnit = nil;
 //        self.audioStatus = XRAudioPlaying;
-//        self.audioStatus = XRAudioRecording;
-        self.audioStatus = XRAudioPlaying | XRAudioRecording;
+        self.audioStatus = XRAudioRecording;
+//        self.audioStatus = XRAudioPlaying | XRAudioRecording;
     }
     return self;
 }
@@ -75,7 +75,6 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
         //4-I、Start
         status = AudioOutputUnitStart(_audioUnit);
     }
-    _audioStatus = XRAudioDefault;
     //停止
     if (_audioStatus == XRAudioDefault) {
         //4-D、Stop
@@ -83,7 +82,7 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
         //3-D、Uninitialize
         status = AudioUnitUninitialize(_audioUnit);
         //2-D、AudioComponent Instance Dispose
-        status = AudioComponentInstanceDispose(_audioUnit);
+        status = [self disposeAudioInstance];
         //1-D、改变Session分类
         [self setAudioSessionCategory];
     }
@@ -336,15 +335,28 @@ typedef NS_ENUM(NSInteger, XRAudioStatus) {
 #pragma mark -
 
 - (OSStatus)createAudioInstance {
-    AudioComponentDescription description = [self audioComponent];
-    AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
-    OSStatus status = AudioComponentInstanceNew(foundIoUnitReference, &_audioUnit);
-    return status;
+    if (_audioUnit == nil) {
+        AudioComponentDescription description = [self audioComponent];
+        AudioComponent foundIoUnitReference = AudioComponentFindNext(NULL, &description);
+        OSStatus status = AudioComponentInstanceNew(foundIoUnitReference, &_audioUnit);
+        return status;
+    } else {
+        OSStatus status;
+        //4-D、Stop
+        status = AudioOutputUnitStop(_audioUnit);
+        if (status != noErr) {
+            return status;
+        }
+        //3-D、Uninitialize
+        status = AudioUnitUninitialize(_audioUnit);
+        return status;
+    }
 }
 
 - (OSStatus)disposeAudioInstance {
     OSStatus status;
     status = AudioComponentInstanceDispose(_audioUnit);
+    _audioUnit = nil;
     return status;
 }
 
